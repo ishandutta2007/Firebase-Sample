@@ -1,14 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="io.pristine.firebasesample.MainActivity">
+<layout  xmlns:android="http://schemas.android.com/apk/res/android"
+         xmlns:tools="http://schemas.android.com/tools">
+  <data>
+    <variable name="progress" type="io.pristine.firebasesample.Progress"/>
+  </data>
+  <FrameLayout
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               tools:context="io.pristine.firebasesample.MainActivity">
+
 
     <TextView
+        android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="@{progress.status}"
+        android:layout_gravity="center|top"/>
+    <TextView
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@{progress.transferred}"
+        android:layout_gravity="center"/>
+    <TextView
+        android:id="@+id/total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@{progress.total}"
+        android:layout_marginTop="64dp"
         android:layout_gravity="center"/>
 
-</FrameLayout>
+    <Button
+        android:id="@+id/pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:text="Pause"/>
+    <Button
+        android:id="@+id/resume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:text="Resume"/>
+
+
+  </FrameLayout>
+
+</layout>
