@@ -5,9 +5,6 @@ import android.content.res.AssetManager;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Process;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -42,8 +39,6 @@ public class MainActivity extends Activity implements OnProgressListener<UploadT
     private static final String TAG = "[MAIN]";
 
     private final Progress progress = new Progress();
-    private Handler backgroundHandler;
-
     private StorageReference storageReference;
     private Uri videoFileUri;
     private StorageMetadata metadata;
@@ -51,11 +46,6 @@ public class MainActivity extends Activity implements OnProgressListener<UploadT
     @Override
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      HandlerThread backgroundHandlerThread = new HandlerThread("background", Process
-          .THREAD_PRIORITY_BACKGROUND);
-      backgroundHandlerThread.start();
-
-      backgroundHandler = new Handler(backgroundHandlerThread.getLooper());
       final ActivityMainBinding binding = DataBindingUtil.setContentView(this,R.layout.activity_main);
       binding.setProgress(progress);
       printGooglePlayAvailability();
@@ -63,12 +53,8 @@ public class MainActivity extends Activity implements OnProgressListener<UploadT
       binding.pause.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          backgroundHandler.post(new Runnable() {
-            @Override
-            public void run() {
-              uploadTask.pause();
-            }
-          });
+
+          uploadTask.pause();
           binding.resume.requestFocus();
         }
       });
@@ -77,12 +63,8 @@ public class MainActivity extends Activity implements OnProgressListener<UploadT
       binding.resume.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          backgroundHandler.post(new Runnable() {
-            @Override
-            public void run() {
-              uploadTask.resume();
-            }
-          });
+
+          uploadTask.resume();
           binding.pause.requestFocus();
         }
       });
@@ -101,26 +83,22 @@ public class MainActivity extends Activity implements OnProgressListener<UploadT
 
 
     private void testStorageUpload() {
-      backgroundHandler.post(new Runnable() {
-        @Override public void run() {
-          File videoFile = new File(getExternalFilesDir(null), "niknak.mp4");
-          if (!videoFile.exists()) {
-            progress.status.set("copying file to private storage");
-            try {
-              videoFile.createNewFile();
-              copyAssets();
-              Log.i(TAG, "Copied file to private app storage");
-            } catch (IOException e) {
-              Log.e(TAG, "Failed to copy niknak.mp4 to private storage", e);
-            }
-          }
-
-          progress.total.set(Long.toString(videoFile.length()));
-          storageReference = FirebaseStorage.getInstance().getReference().child(Long.toString(System.currentTimeMillis()));
-          videoFileUri = Uri.fromFile(videoFile);
-          startUploadTask();
+      File videoFile = new File(getExternalFilesDir(null), "niknak.mp4");
+      if (!videoFile.exists()) {
+        progress.status.set("copying file to private storage");
+        try {
+          videoFile.createNewFile();
+          copyAssets();
+          Log.i(TAG, "Copied file to private app storage");
+        } catch (IOException e) {
+          Log.e(TAG, "Failed to copy niknak.mp4 to private storage", e);
         }
-      });
+      }
+
+      progress.total.set(Long.toString(videoFile.length()));
+      storageReference = FirebaseStorage.getInstance().getReference().child(Long.toString(System.currentTimeMillis()));
+      videoFileUri = Uri.fromFile(videoFile);
+      startUploadTask();
     }
 
     private void startUploadTask() {
