@@ -63,7 +63,12 @@ public class MainActivity extends Activity implements OnProgressListener<UploadT
       binding.pause.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          uploadTask.pause();
+          backgroundHandler.post(new Runnable() {
+            @Override
+            public void run() {
+              uploadTask.pause();
+            }
+          });
           binding.resume.requestFocus();
         }
       });
@@ -72,7 +77,12 @@ public class MainActivity extends Activity implements OnProgressListener<UploadT
       binding.resume.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          uploadTask.resume();
+          backgroundHandler.post(new Runnable() {
+            @Override
+            public void run() {
+              uploadTask.resume();
+            }
+          });
           binding.pause.requestFocus();
         }
       });
@@ -174,7 +184,6 @@ public class MainActivity extends Activity implements OnProgressListener<UploadT
         out = new FileOutputStream(outFile);
         copyFile(in, out);
       } catch(IOException e) {
-        Log.e("tag", "Failed to copy asset file: " + filename, e);
       }
       finally {
         if (in != null) {
